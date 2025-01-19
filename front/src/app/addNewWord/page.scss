@@ -1,0 +1,12 @@
+@use '@/styles' as *;
+
+.AddNewWordPage {
+  @include pageColFlex();
+  h1 {
+    margin-bottom: 16px;
+  }
+
+  .buttons {
+
+  }
+}

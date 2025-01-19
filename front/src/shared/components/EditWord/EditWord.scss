@@ -1,0 +1,55 @@
+@use '@/styles' as *;
+
+.EditWord {
+  @include defaultLayout();
+
+  h4 {
+    margin-top: 16px;
+  }
+
+  .translations {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 8px 0;
+    gap: 16px;
+    align-items: center;
+
+    &>div {
+      background-color: #333;
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
+  }
+
+  .addTranslation {
+    background-color: #333;
+    padding: 2px 4px;
+    border-radius: 4px;
+    width: fit-content;
+  }
+
+  .flex {
+    input {
+      flex-grow: 1;
+    }
+    
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    align-items: center;
+
+    button {
+      align-self: stretch;
+      text-align: center;
+      padding: 0;
+      width: 40px;
+    }
+  }
+
+  .footer {
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+  }
+}

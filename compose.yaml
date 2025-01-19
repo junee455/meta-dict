@@ -1,0 +1,38 @@
+services:
+  back:
+    build:
+      context: ./back-go
+      target: base
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./back-go:/app
+    environment:
+      - MONGO_URI=mongodb://host.docker.internal:27017
+    networks:
+      - metadict
+
+  front:
+    build:
+      context: ./front
+      target: base
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./front:/app
+    networks:
+      - metadict
+
+  nginx:
+    image: nginx:latest
+    restart: always
+    volumes:
+      - ./dev-nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - "8000:8000"
+    networks:
+      - metadict
+
+networks:
+  metadict:
+    driver: bridge

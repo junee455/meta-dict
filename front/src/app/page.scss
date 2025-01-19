@@ -1,0 +1,16 @@
+nav {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+
+  padding: 8px;
+
+  gap: 8px;
+
+  a {
+    flex-grow: 1;
+    text-align: center;
+    padding: 8px;
+    background-color: #555;
+  }
+}

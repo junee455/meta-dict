@@ -1,0 +1,66 @@
+@use '@/styles' as *;
+
+.MainPage {
+  @include pageColFlex();
+
+  * {
+    position: relative;
+  }
+
+  max-height: 100dvh;
+
+  .wordList {
+    overflow-y: auto;
+
+    &>div {
+      position: relative;
+      font-size: 20px;
+      padding: 5px;
+      border-left: 1px solid grey;
+    }
+
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      color: white;
+    }
+
+    .descriptionFragmentHighlight {
+      margin-top: 16px;
+      color: transparent;
+    }
+
+    .translationHighlightContainer {
+      display: flex;
+      flex-direction: row;
+      gap: 8px;
+
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      color: transparent;
+    }
+
+    .wordHighlightContainer {
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      color: transparent;
+    }
+
+    .highlight {
+      background-color: gold;
+      opacity: 0.5;
+      width: fit-content;
+      border-radius: 3px;
+    }
+  }
+
+  .flex {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}

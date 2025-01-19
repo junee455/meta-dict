@@ -1,0 +1,15 @@
+# .air.toml file for hot-reloading with `air`
+root = "."
+tmp_dir = "tmp"
+
+# Watch the go files and restart on changes
+[build]
+  bin = "tmp/main"        # Build output binary location
+  cmd = "go build -o tmp/main ."  # Command to build your app
+  include = []            # Files to include for reloading (default is all .go files)
+  exclude = ["tmp/**", "assets/**"]  # Files to exclude (e.g., temporary files or large directories)
+
+# Define which directories to watch for file changes
+[watch]
+  dirs = ["."]
+  patterns = ["*.go", "*.tmpl", "*.html"]  # Watch Go files, templates, or other relevant files

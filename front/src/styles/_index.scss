@@ -1,0 +1,34 @@
+@mixin pageColFlex {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+
+  overflow-y: auto;
+}
+
+@mixin defaultLayout {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+
+  .header {
+    flex-shrink: 1;
+  }
+
+  .content {
+    flex-grow: 1;
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px;
+
+    overflow-y: auto;
+  }
+
+  .footer {
+    flex-shrink: 1;
+  }
+
+}

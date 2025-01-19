@@ -1,0 +1,33 @@
+@use '@/styles' as *;
+
+.WordInfoPage {
+  @include defaultLayout();
+
+  .translations {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    &> div {
+      background-color: #333;
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
+  }
+
+  .footer {
+    padding: 8px;
+  }
+
+  .buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+
+    a,
+    button {
+      flex-grow: 1;
+    }
+  }
+}
