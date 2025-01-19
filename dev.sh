@@ -1,2 +1,2 @@
 #!/usr/bin/bash
-docker compose -f ./compose.yaml up --build
+docker compose --env-file ./local.env -f ./compose.yaml up --build

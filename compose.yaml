@@ -8,7 +8,7 @@ services:
     volumes:
       - ./back-go:/app
     environment:
-      - MONGO_URI=mongodb://host.docker.internal:27017
+      - MONGO_URI=${MONGO_URI}
     networks:
       - metadict
 
@@ -27,9 +27,14 @@ services:
     image: nginx:latest
     restart: always
     volumes:
-      - ./dev-nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/dev-nginx.conf:/etc/nginx/nginx.conf
+      - ${TG_BOT_CERT}:${TG_BOT_CERT_SERVER}
+      - ${TG_BOT_KEY}:${TG_BOT_KEY_SERVER}
     ports:
-      - "8000:8000"
+      - "8000:443"
+    environment:
+      - TG_BOT_CERT=${TG_BOT_CERT}
+      - TG_BOT_KEY=${TG_BOT_KEY}
     networks:
       - metadict
 
