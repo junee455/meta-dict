@@ -12,5 +12,8 @@ jobs:
     runs-on: self-hosted
     environment: production
     steps:
-      - name: check runner
-        run: whoami
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: check directories
+        run: |
+          find . 
