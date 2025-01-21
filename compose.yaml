@@ -1,5 +1,6 @@
 services:
   back:
+    container_name: back
     build:
       context: ./back-go
       target: base
@@ -8,11 +9,14 @@ services:
     volumes:
       - ./back-go:/app
     environment:
-      - MONGO_URI=${MONGO_URI}
+      MONGO_URI: mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_URI}
+    depends_on:
+      - mongo
     networks:
       - metadict
 
   front:
+    container_name: front
     build:
       context: ./front
       target: base
@@ -25,6 +29,7 @@ services:
 
   nginx:
     image: nginx:latest
+    container_name: nginx
     restart: always
     volumes:
       - ./nginx/dev-nginx.conf:/etc/nginx/nginx.conf
@@ -35,6 +40,21 @@ services:
     environment:
       - TG_BOT_CERT=${TG_BOT_CERT}
       - TG_BOT_KEY=${TG_BOT_KEY}
+    networks:
+      - metadict
+  
+  mongo:
+    container_name: mongo
+    build:
+      context: ./mongo
+      target: base
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    volumes:
+      - ./mongo/data:${MONGO_DATA_PATH}
+    ports:
+      - "27017:27017"
     networks:
       - metadict
 

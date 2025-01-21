@@ -1,2 +1,5 @@
 local.env
+prod.env
 /certs
+mongo/data/*
+!mongo/data
