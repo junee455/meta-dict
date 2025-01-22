@@ -18,6 +18,7 @@ func main() {
 
 	router := gin.Default()
 
+	router.GET("/healthcheck", handlers.Healthcheck)
 	router.GET("/wordInfo", handlers.GetWordsList)
 	router.GET("/wordInfo/:word", handlers.GetWordInfo)
 	router.POST("/wordInfo", handlers.AddWordInfo)
