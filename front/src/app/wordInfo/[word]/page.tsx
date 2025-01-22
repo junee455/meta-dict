@@ -16,7 +16,7 @@ export default function WordInfo({
   const [word, setWord] = useState<string>();
 
   useEffect(() => {
-    params.then((w) => setWord(w.word));
+    params.then((w) => setWord(decodeURIComponent(w.word)));
   }, [params]);
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
