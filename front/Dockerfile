@@ -12,7 +12,7 @@ COPY yarn.lock /app/yarn.lock
 RUN yarn install --frozen-lockfile
 
 # Copy the rest of the application code
-COPY . .
+COPY . /app
 
 # Set the environment to development
 ENV NODE_ENV=development
