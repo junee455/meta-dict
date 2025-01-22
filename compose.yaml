@@ -40,6 +40,9 @@ services:
     environment:
       - TG_BOT_CERT=${TG_BOT_CERT}
       - TG_BOT_KEY=${TG_BOT_KEY}
+    depends_on:
+      - back
+      - front
     networks:
       - metadict
   
