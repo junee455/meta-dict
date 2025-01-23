@@ -19,11 +19,13 @@ services:
     container_name: front
     build:
       context: ./front
+      dockerfile: Dockerfile
       target: base
     ports:
       - "3000:3000"
     volumes:
       - ./front:/app
+      - /app/node_modules
     networks:
       - metadict
 
