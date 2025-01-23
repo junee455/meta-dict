@@ -15,19 +15,17 @@ services:
     networks:
       - metadict
 
-  # front:
-  #   container_name: front
-  #   build:
-  #     context: ./front
-  #     target: base
-  #   ports:
-  #     - "3000:3000"
-  #   volumes:
-  #     - ./front:/app
-  #     - /app/node_modules
-  #     - /app/.next
-  #   networks:
-  #     - metadict
+  front:
+    container_name: front
+    build:
+      context: ./front
+      target: base
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./front:/app
+    networks:
+      - metadict
 
   nginx:
     image: nginx:latest
@@ -44,10 +42,10 @@ services:
       - TG_BOT_KEY=${TG_BOT_KEY}
     depends_on:
       - back
-      # - front
+      - front
     networks:
       - metadict
-  
+
   mongo:
     container_name: mongo
     build:
