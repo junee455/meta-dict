@@ -4,6 +4,8 @@ FROM node:18-alpine AS base
 # Set the working directory inside the container
 WORKDIR /app
 
+COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* .npmrc* ./
+
 # Same as npm install
 RUN yarn install --frozen-lockfile
 
