@@ -7,7 +7,7 @@ import Link from "next/link";
 import "./globals.scss";
 import "./page.scss";
 
-export const queryClient = new QueryClient();
+const queryClient = new QueryClient();
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

@@ -109,3 +109,7 @@ func AddWordInfo(c *gin.Context) {
 	// Word: ,
 	// })
 }
+
+func Healthcheck(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{"status": "ok"})
+}

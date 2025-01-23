@@ -1,0 +1,29 @@
+name: GitHub Deploy
+run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  Deploy:
+    runs-on: self-hosted
+    environment: production
+    steps:
+      - name: pull
+        uses: actions/checkout@v4
+      - name: prepare env
+        env:
+          MONGO_DATA_PATH: ${{ secrets.MONGO_DATA_PATH }}
+          MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
+          MONGO_USERNAME: ${{ secrets.MONGO_USERNAME }}
+          MONGO_URI: ${{ secrets.MONGO_URI }}
+          TG_BOT_CERT: ${{secrets.TG_BOT_CERT_SERVER}}
+          TG_BOT_KEY: ${{secrets.TG_BOT_KEY_SERVER}}
+          TG_BOT_CERT_SERVER: /etc/nginx/ssl/nginx.crt
+          TG_BOT_KEY_SERVER: /etc/nginx/ssl/nginx.key
+        run: |
+          docker compose -f ./compose.yaml up --build -d

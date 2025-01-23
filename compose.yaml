@@ -1,5 +1,6 @@
 services:
   back:
+    container_name: back
     build:
       context: ./back-go
       target: base
@@ -8,28 +9,57 @@ services:
     volumes:
       - ./back-go:/app
     environment:
-      - MONGO_URI=mongodb://host.docker.internal:27017
+      MONGO_URI: mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_URI}
+    depends_on:
+      - mongo
     networks:
       - metadict
 
   front:
+    container_name: front
     build:
       context: ./front
+      dockerfile: Dockerfile
       target: base
     ports:
       - "3000:3000"
     volumes:
       - ./front:/app
+      - /app/node_modules
     networks:
       - metadict
 
   nginx:
     image: nginx:latest
+    container_name: nginx
     restart: always
     volumes:
-      - ./dev-nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/dev-nginx.conf:/etc/nginx/nginx.conf
+      - ${TG_BOT_CERT}:${TG_BOT_CERT_SERVER}
+      - ${TG_BOT_KEY}:${TG_BOT_KEY_SERVER}
     ports:
-      - "8000:8000"
+      - "443:443"
+    environment:
+      - TG_BOT_CERT=${TG_BOT_CERT}
+      - TG_BOT_KEY=${TG_BOT_KEY}
+    depends_on:
+      - back
+      - front
+    networks:
+      - metadict
+
+  mongo:
+    container_name: mongo
+    build:
+      context: ./mongo
+      target: base
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    volumes:
+      - ${MONGO_DATA_PATH}:/data/db
+    ports:
+      - "27017:27017"
     networks:
       - metadict
 
