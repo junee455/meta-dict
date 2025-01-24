@@ -18,5 +18,6 @@ export function useInput(initialValue = "") {
   return {
     value,
     onChange,
+    setValue
   };
 }

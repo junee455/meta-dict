@@ -113,6 +113,7 @@ export function EditWord(props: EditWordProps) {
   };
 
   const addNewTranslation = () => {
+    editTranslationInput.setValue("");
     setEditingTranslation({ value: "", oldValue: "" });
   };
 
