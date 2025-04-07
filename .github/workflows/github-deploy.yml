@@ -25,5 +25,6 @@ jobs:
           TG_BOT_KEY: ${{secrets.TG_BOT_KEY_SERVER}}
           TG_BOT_CERT_SERVER: /etc/nginx/ssl/nginx.crt
           TG_BOT_KEY_SERVER: /etc/nginx/ssl/nginx.key
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
         run: |
           docker compose -f ./compose.yaml up --build -d
