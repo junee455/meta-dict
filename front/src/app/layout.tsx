@@ -1,22 +1,23 @@
-"use client";
+'use client';
 
-import { Geist, Geist_Mono } from "next/font/google";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import Link from "next/link";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Geist, Geist_Mono } from 'next/font/google';
+import Link from 'next/link';
+import Script from 'next/script';
 
-import "./globals.scss";
-import "./page.scss";
+import './globals.scss';
+import './page.scss';
 
 const queryClient = new QueryClient();
 
 const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+  variable: '--font-geist-sans',
+  subsets: ['latin'],
 });
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  variable: '--font-geist-mono',
+  subsets: ['latin'],
 });
 
 // export const metadata: Metadata = {
@@ -31,10 +32,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <Script src="https://telegram.org/js/telegram-web-app.js?56" />
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <nav>
-          <Link href={"/"}>Home</Link>
-          <Link href={"/addNewWord"}>Add new</Link>
+          <Link href={'/'}>Home</Link>
+          <Link href={'/addNewWord'}>Add new</Link>
         </nav>
         <QueryClientProvider client={queryClient}>
           {children}

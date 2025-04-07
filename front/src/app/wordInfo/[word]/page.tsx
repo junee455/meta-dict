@@ -1,10 +1,12 @@
-"use client";
+'use client';
 
-import { useEffect, useMemo, useState } from "react";
-import "./page.scss";
-import { useQuery } from "@tanstack/react-query";
-import { Word } from "@/types";
-import Link from "next/link";
+import { useEffect, useMemo, useState } from 'react';
+
+import { Word } from '@/types';
+import { useQuery } from '@tanstack/react-query';
+import Link from 'next/link';
+
+import './page.scss';
 
 export default function WordInfo({
   params,
@@ -24,19 +26,26 @@ export default function WordInfo({
   const [deleteConfirmed, setDeleteConfirmed] = useState(false);
 
   const getWordQuery = useQuery({
-    queryKey: ["getWordInfo", word],
+    queryKey: ['getWordInfo', word],
     queryFn: async () => {
-      const res = await fetch(`/api/wordInfo/${word}`);
+      const res = await fetch(`/api/wordInfo/${word}`, {
+        headers: {
+          InitData: Telegram.WebApp.initData,
+        },
+      });
       return (await res.json()) as Word;
     },
     enabled: !!word,
   });
 
   const deleteWordQuery = useQuery({
-    queryKey: ["deleteWord", word],
+    queryKey: ['deleteWord', word],
     queryFn: async () => {
-      const res = await fetch(`/api/wordInfo/${getWordQuery.data?.id}`, {
-        method: "DELETE",
+      const res = await fetch(`/api/wordInfo/${word}`, {
+        method: 'DELETE',
+        headers: {
+          InitData: Telegram.WebApp.initData,
+        },
       });
 
       return res.status;

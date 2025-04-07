@@ -1,6 +1,6 @@
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from 'react';
 
-export function useInput(initialValue = "") {
+export function useInput(initialValue = '') {
   const [value, setValue] = useState(initialValue);
 
   useEffect(() => {
@@ -16,8 +16,12 @@ export function useInput(initialValue = "") {
   };
 
   return {
+    inputProps: {
+      value,
+      onChange,
+    },
     value,
     onChange,
-    setValue
+    setValue,
   };
 }

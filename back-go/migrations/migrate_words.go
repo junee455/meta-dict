@@ -2,6 +2,7 @@ package migrations
 
 import (
 	"context"
+	"fmt"
 	"meta-dict-back/dict_db"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -16,46 +17,50 @@ type NewWordSchema struct {
 	Description  string               `bson:"description" json:"description"`
 	Metadata     string               `bson:"metadata,omitempty" json:"metadata,omitempty"`
 	Similar      []primitive.ObjectID `bson:"similar,omitempty" json:"similar,omitempty"`
+	// user that owns the word
+	Owner primitive.ObjectID `bson:"owner,omitempty" json:"owner,omitempty"`
 }
 
-func MigrateWords() {
+type UserSchema struct {
+	ID    primitive.ObjectID   `bson:"_id,omitempty" json:"id,omitempty"` // MongoDB automatically sets this field if omitted
+	TgID  string               `bson:"tgID" json:"tgID"`
+	Words []dict_db.WordSchema `bson:"words" json:"words"`
+}
+
+func MigrateWords(tgUserId string) {
 	db := dict_db.GetDB()
 
 	filter := bson.M{}
 
 	ctx := context.Background()
 
-	collection := db.DB.Collection("words")
+	wordsCollection := db.DB.Collection("words")
 
-	cursor, err := collection.Find(ctx, filter)
+	usersCollection := db.DB.Collection("users")
+
+	var words []dict_db.WordSchema
+
+	cursor, err := wordsCollection.Find(ctx, filter)
 
 	if err != nil {
 		return
 	}
 
-	for cursor.Next(ctx) {
-		var oldWord dict_db.WordSchema
-		if err := cursor.Decode(&oldWord); err != nil {
-			return
-		}
+	fmt.Println("created new user doc")
 
-		// var newWord = NewWordSchema{
-		// 	ID:           oldWord.ID,
-		// 	Word:         oldWord.Word,
-		// 	Translations: strings.Split(oldWord.Translation, ","),
-		// 	Description:  oldWord.Description,
-		// 	Metadata:     oldWord.Metadata,
-		// 	Similar:      oldWord.Similar,
-		// }
+	err = cursor.All(context.TODO(), &words)
 
-		_, err := collection.UpdateByID(ctx, oldWord.ID, bson.M{
-			"$unset": bson.M{
-				"translation": "",
-			},
-		})
+	newUserDoc := bson.M{"tgID": tgUserId, "words": words}
 
-		if err != nil {
-			return
-		}
+	if err != nil {
+		return
+	}
+
+	fmt.Println("created new user doc")
+
+	_, err = usersCollection.InsertOne(context.TODO(), newUserDoc)
+
+	if err != nil {
+		return
 	}
 }

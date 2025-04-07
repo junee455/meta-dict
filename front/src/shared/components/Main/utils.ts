@@ -1,5 +1,5 @@
-import { Word } from "@/types";
-import { FuseResultMatch, RangeTuple } from "fuse.js";
+import { Word } from '@/types';
+import { FuseResultMatch, RangeTuple } from 'fuse.js';
 
 export type FuseSearchResult = {
   index: number;
@@ -33,7 +33,7 @@ export function splitWordInTokens(word: string, matches: number[][]) {
     wordLeftover = splitRes.slice(1).join(highlightedToken);
 
     if (wordLeftover === undefined) {
-      wordLeftover = "";
+      wordLeftover = '';
     }
 
     tokens.push([dimToken, false], [highlightedToken, true]);

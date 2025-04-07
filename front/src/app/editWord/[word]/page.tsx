@@ -1,9 +1,10 @@
-"use client";
+'use client';
 
-import { EditWord } from "@/shared/components";
-import { Word } from "@/types";
-import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
+
+import { EditWord } from '@/shared/components';
+import { Word } from '@/types';
+import { useQuery } from '@tanstack/react-query';
 
 export default function EditWordPage({
   params,
@@ -17,9 +18,13 @@ export default function EditWordPage({
   }, [params]);
 
   const getWordQuery = useQuery({
-    queryKey: ["getWordInfo", word],
+    queryKey: ['getWordInfo', word],
     queryFn: async () => {
-      const res = await fetch(`/api/wordInfo/${word}`);
+      const res = await fetch(`/api/wordInfo/${word}`, {
+        headers: {
+          InitData: Telegram.WebApp.initData,
+        },
+      });
       return (await res.json()) as Word;
     },
     enabled: !!word,

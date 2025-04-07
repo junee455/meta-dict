@@ -2,15 +2,22 @@ package dict_db
 
 import (
 	"context"
-	"os"
-	"time"
-
+	"go.mongodb.org/mongo-driver/bson"
+	// "go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"os"
+	"time"
 )
 
 type DictDBConnection struct {
 	DB *mongo.Database
+}
+
+type ConnectionWithUser struct {
+	DictDBConnection
+	UsersCollection *mongo.Collection
+	User            UserSchema
 }
 
 var DB_CONNECTION DictDBConnection
@@ -43,4 +50,40 @@ func Disconnect() {
 
 func GetDB() DictDBConnection {
 	return DB_CONNECTION
+}
+
+func GetDBWithUser(userTgId string) (*ConnectionWithUser, error) {
+	db := GetDB()
+
+	filter := bson.M{"tgID": userTgId}
+
+	var userDoc UserSchema
+
+	usersCollection := db.DB.Collection("users")
+	err := usersCollection.FindOne(context.Background(), filter).Decode(&userDoc)
+
+	if err != nil {
+		// failed to find user, then create a new one
+		var newUser UserSchema
+
+		newUser.TgID = userTgId
+
+		_, err := usersCollection.InsertOne(context.Background(), newUser)
+
+		if err != nil {
+			return nil, err
+		}
+
+		err = usersCollection.FindOne(context.Background(), filter).Decode(&userDoc)
+
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return &ConnectionWithUser{
+		DictDBConnection: db,
+		UsersCollection:  usersCollection,
+		User:             userDoc,
+	}, nil
 }

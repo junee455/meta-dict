@@ -1,4 +1,4 @@
-import "./CheckBox.scss";
+import './CheckBox.scss';
 
 export type CheckBoxProps = {
   label?: string;
@@ -10,7 +10,7 @@ export function CheckBox({ label, checked, onChange }: CheckBoxProps) {
   return (
     <div className="CheckBox">
       <button onClick={onChange} className="checkboxButton">
-        {checked ? "✔" : ""}
+        {checked ? '✔' : ''}
       </button>
       <div>{label}</div>
     </div>

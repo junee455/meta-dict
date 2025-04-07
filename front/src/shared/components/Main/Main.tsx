@@ -1,16 +1,15 @@
-"use client";
+'use client';
 
-import { Fragment, useEffect, useMemo, useState } from "react";
-import Fuse, { IFuseOptions, RangeTuple } from "fuse.js";
+import { Fragment, useEffect, useMemo, useState } from 'react';
 
-import { useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
-import { Word } from "@/types";
+import { CheckBox } from '../CheckBox/CheckBox';
+import { FuseSearchResult, getIndicesForKey, splitWordInTokens } from './utils';
+import { Word } from '@/types';
+import { useQuery } from '@tanstack/react-query';
+import Fuse, { IFuseOptions, RangeTuple } from 'fuse.js';
+import { useRouter } from 'next/navigation';
 
-import { CheckBox } from "../CheckBox/CheckBox";
-import { FuseSearchResult, getIndicesForKey, splitWordInTokens } from "./utils";
-
-import "./Main.scss";
+import './Main.scss';
 
 function RenderHighlights(props: { word: string; matches: RangeTuple[] }) {
   const { word, matches } = props;
@@ -18,7 +17,7 @@ function RenderHighlights(props: { word: string; matches: RangeTuple[] }) {
   return (
     <>
       {splitWordInTokens(word, matches).map((t, i) => (
-        <span className={t[1] ? "highlight" : ""} key={i}>
+        <span className={t[1] ? 'highlight' : ''} key={i}>
           {t}
         </span>
       ))}
@@ -27,7 +26,7 @@ function RenderHighlights(props: { word: string; matches: RangeTuple[] }) {
 }
 
 export function Main() {
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
 
   const [searchResult, setSearchResult] = useState<FuseSearchResult[]>([]);
 
@@ -40,9 +39,13 @@ export function Main() {
   // try get words from api
 
   const getWordsQuery = useQuery({
-    queryKey: ["getWords"],
+    queryKey: ['getWords'],
     queryFn: async () => {
-      const res = await fetch("api/wordInfo");
+      const res = await fetch('api/wordInfo', {
+        headers: {
+          InitData: Telegram.WebApp.initData,
+        },
+      });
       return (await res.json()) as Word[];
     },
   });
@@ -59,19 +62,19 @@ export function Main() {
     const filterKeys: string[] = [];
 
     if (filters.byWord) {
-      filterKeys.push("word");
+      filterKeys.push('word');
     }
 
     if (filters.byDescription) {
-      filterKeys.push("description");
+      filterKeys.push('description');
     }
 
     if (filters.byTranslation) {
-      filterKeys.push("translations");
+      filterKeys.push('translations');
     }
 
     if (!filterKeys.length) {
-      filterKeys.push("word");
+      filterKeys.push('word');
     }
 
     const fuseOptions: IFuseOptions<unknown> = {
@@ -126,9 +129,9 @@ export function Main() {
         word: string;
         matches: RangeTuple[];
       }[] = r.matches
-        .filter((m) => m.key === "translations")
+        .filter((m) => m.key === 'translations')
         .map((m) => ({
-          word: m.value || "",
+          word: m.value || '',
           matches: [...m.indices],
         }));
 
@@ -146,7 +149,7 @@ export function Main() {
 
     const renderDescriptionFragment = (r: FuseSearchResult) => {
       const descriptionFragment = r.matches.find(
-        (m) => m.key === "description"
+        (m) => m.key === 'description'
       );
 
       if (!descriptionFragment) {
@@ -156,7 +159,7 @@ export function Main() {
       return (
         <div className="descriptionFragmentHighlight">
           <RenderHighlights
-            word={descriptionFragment.value || ""}
+            word={descriptionFragment.value || ''}
             matches={[...descriptionFragment.indices]}
           />
           <div className="overlay">{descriptionFragment.value}</div>
@@ -173,7 +176,7 @@ export function Main() {
                 <RenderHighlights
                   key={r.item.word}
                   word={r.item.word}
-                  matches={getIndicesForKey("word", r.matches)}
+                  matches={getIndicesForKey('word', r.matches)}
                 />
               </div>
             )}
@@ -205,17 +208,17 @@ export function Main() {
         <CheckBox
           label="word"
           checked={filters.byWord}
-          onChange={() => toggleFilter("byWord")}
+          onChange={() => toggleFilter('byWord')}
         />
         <CheckBox
           label="translation"
           checked={filters.byTranslation}
-          onChange={() => toggleFilter("byTranslation")}
+          onChange={() => toggleFilter('byTranslation')}
         />
         <CheckBox
           label="description"
           checked={filters.byDescription}
-          onChange={() => toggleFilter("byDescription")}
+          onChange={() => toggleFilter('byDescription')}
         />
       </div>
 

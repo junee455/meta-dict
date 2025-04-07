@@ -1,6 +1,6 @@
-import { Main } from "@/shared/components/Main/Main";
+import { Main } from '@/shared/components/Main/Main';
 
-import "./page.scss";
+import './page.scss';
 
 export default function Root() {
   return <Main />;

@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
 	"meta-dict-back/dict_db"
@@ -10,41 +9,90 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func GetWordsList(c *gin.Context) {
-	db := dict_db.GetDB()
-
-	collections, _ := db.DB.ListCollectionNames(context.Background(), bson.D{})
-
-	fmt.Println("GET WORDS")
-	fmt.Printf("Collections: %v \n", len(collections))
-
-	words, err := db.GetWordsList()
-
-	if err != nil {
-		c.Status(http.StatusInternalServerError)
+func updateUserWordList(connection *dict_db.ConnectionWithUser, words []dict_db.WordSchema) (*mongo.UpdateResult, error) {
+	update := bson.M{"$set": bson.M{
+		"words": words,
+	},
 	}
 
-	c.JSON(http.StatusOK, words)
+	idHex, _ := primitive.ObjectIDFromHex(connection.User.ID)
+
+	res, err := connection.UsersCollection.UpdateByID(context.TODO(), idHex, update)
+
+	return res, err
+}
+
+func GetWordsList(c *gin.Context) {
+	connectionAny, exists := c.Get("dbConnection")
+
+	if !exists {
+		c.Status(http.StatusInternalServerError)
+
+		return
+	}
+
+	connection, ok := connectionAny.(*dict_db.ConnectionWithUser)
+
+	if !ok {
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+
+	c.JSON(http.StatusOK, connection.User.Words)
 }
 
 func GetWordInfo(c *gin.Context) {
-	db := dict_db.GetDB()
-
 	req_word := c.Params.ByName("word")
 
-	word, err := db.FindWord(req_word)
+	connectionAny, exists := c.Get("dbConnection")
 
-	if err != nil {
-		c.Status(http.StatusNotFound)
+	if !exists {
+		c.Status(http.StatusInternalServerError)
+
+		return
 	}
 
-	c.JSON(http.StatusOK, word)
+	connection, ok := connectionAny.(*dict_db.ConnectionWithUser)
+
+	if !ok {
+		c.Status(http.StatusInternalServerError)
+
+		return
+	}
+
+	for _, word := range connection.User.Words {
+		if word.Word == req_word {
+			c.JSON(http.StatusOK, word)
+			return
+		}
+	}
+
+	c.Status(http.StatusNotFound)
 }
 
 func UpdateWord(c *gin.Context) {
-	db := dict_db.GetDB()
+	// validate connection >>
+
+	connectionAny, exists := c.Get("dbConnection")
+
+	if !exists {
+		c.Status(http.StatusInternalServerError)
+
+		return
+	}
+
+	connection, ok := connectionAny.(*dict_db.ConnectionWithUser)
+
+	if !ok {
+		c.Status(http.StatusInternalServerError)
+
+		return
+	}
+
+	// validate connection <<
 
 	var word_data dict_db.WordSchema
 
@@ -54,32 +102,83 @@ func UpdateWord(c *gin.Context) {
 		return
 	}
 
-	result, err := db.UpdateWord(word_data.ID, word_data)
+	req_word := word_data.Word
 
-	fmt.Printf("%v %v\n", result, err)
+	// find word
+	var wordIndex int = -1
 
-	if err != nil || result.ModifiedCount != 1 {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update word"})
+	for i, w := range connection.User.Words {
+		if w.Word == req_word {
+			wordIndex = i
+			break
+		}
+	}
+
+	if wordIndex == -1 {
+		c.Status(http.StatusInternalServerError)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"status": "success"})
+	connection.User.Words[wordIndex] = word_data
+
+	res, err := updateUserWordList(connection, connection.User.Words)
+
+	if err != nil {
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+
+	if res.MatchedCount == 0 {
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+
+	c.Status(http.StatusOK)
 }
 
 func DeleteWord(c *gin.Context) {
-	db := dict_db.GetDB()
-	word_id_param := c.Params.ByName("wordId")
+	connectionAny, exists := c.Get("dbConnection")
 
-	word_id, err := primitive.ObjectIDFromHex(word_id_param)
+	if !exists {
+		c.Status(http.StatusInternalServerError)
 
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "invalid id"})
 		return
 	}
 
-	db_res, err := db.DeleteWord(word_id)
+	connection, ok := connectionAny.(*dict_db.ConnectionWithUser)
 
-	if err != nil || db_res.DeletedCount != 1 {
+	if !ok {
+		c.Status(http.StatusInternalServerError)
+
+		return
+	}
+
+	req_word := c.Params.ByName("word")
+
+	var wordIndex int = -1
+
+	for i, w := range connection.User.Words {
+		if w.Word == req_word {
+			wordIndex = i
+			break
+		}
+	}
+
+	if wordIndex == -1 {
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+
+	connection.User.Words = append(connection.User.Words[:wordIndex], connection.User.Words[wordIndex+1:]...)
+
+	res, err := updateUserWordList(connection, connection.User.Words)
+
+	if err != nil {
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+
+	if res.MatchedCount == 0 {
 		c.Status(http.StatusInternalServerError)
 		return
 	}
@@ -88,26 +187,48 @@ func DeleteWord(c *gin.Context) {
 }
 
 func AddWordInfo(c *gin.Context) {
-	db := dict_db.GetDB()
+	connectionAny, exists := c.Get("dbConnection")
 
-	var word_data dict_db.WordSchema
+	if !exists {
+		c.Status(http.StatusInternalServerError)
+
+		return
+	}
+
+	connection, ok := connectionAny.(*dict_db.ConnectionWithUser)
+
+	if !ok {
+		c.Status(http.StatusInternalServerError)
+
+		return
+	}
 
 	// get word json
+	var word_data dict_db.WordSchema
+
 	if err := c.ShouldBindJSON(&word_data); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "bad request"})
 	}
 
-	newID, err := db.AddNewWord(word_data)
-
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to insert new word"})
+	if len(connection.User.Words) < 1 {
+		connection.User.Words = []dict_db.WordSchema{}
 	}
 
-	c.JSON(http.StatusOK, newID)
+	connection.User.Words = append(connection.User.Words, word_data)
 
-	// db.AddNewWord(dict_db.WordSchema{
-	// Word: ,
-	// })
+	res, err := updateUserWordList(connection, connection.User.Words)
+
+	if err != nil {
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+
+	if res.MatchedCount == 0 {
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+
+	c.Status(http.StatusOK)
 }
 
 func Healthcheck(c *gin.Context) {
