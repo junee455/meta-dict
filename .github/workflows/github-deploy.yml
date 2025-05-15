@@ -1,12 +1,13 @@
 name: GitHub Deploy
 run-name: ${{ github.actor }} deploying to prod
 on:
-  push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
+  workflow_dispatch
+  # push:
+  #   branches:
+  #     - master
+  # pull_request:
+  #   branches:
+  #     - master
 
 jobs:
   Deploy:
