@@ -10,6 +10,7 @@ services:
       - ./back-go:/app
     environment:
       MONGO_URI: mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_URI}
+      TG_BOT_TOKEN: ${TG_BOT_TOKEN}
     depends_on:
       - mongo
     networks:

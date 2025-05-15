@@ -12,7 +12,7 @@
   .wordList {
     overflow-y: auto;
 
-    &>div {
+    & > div {
       position: relative;
       font-size: 20px;
       padding: 5px;

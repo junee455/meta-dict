@@ -1,12 +1,13 @@
 name: GitHub Deploy
-run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+run-name: ${{ github.actor }} deploying to prod
 on:
-  push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
+  workflow_dispatch
+  # push:
+  #   branches:
+  #     - master
+  # pull_request:
+  #   branches:
+  #     - master
 
 jobs:
   Deploy:
@@ -25,5 +26,6 @@ jobs:
           TG_BOT_KEY: ${{secrets.TG_BOT_KEY_SERVER}}
           TG_BOT_CERT_SERVER: /etc/nginx/ssl/nginx.crt
           TG_BOT_KEY_SERVER: /etc/nginx/ssl/nginx.key
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
         run: |
           docker compose -f ./compose.yaml up --build -d

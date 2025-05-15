@@ -1,11 +1,12 @@
-"use client";
+'use client';
 
-import { useInput } from "@/shared/hooks";
-import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
-import { Word } from "@/types";
+import { useState } from 'react';
 
-import "./EditWord.scss";
+import { useInput } from '@/shared/hooks';
+import { Word } from '@/types';
+import { useQuery } from '@tanstack/react-query';
+
+import './EditWord.scss';
 
 export type EditWordProps = {
   initialWord?: Word;
@@ -30,34 +31,30 @@ export function EditWord(props: EditWordProps) {
   );
 
   const saveWordQuery = useQuery({
-    queryKey: ["addWord"],
+    queryKey: ['addWord'],
     queryFn: async () => {
       let reqMethod: string;
 
-      let withId: object;
-
       if (update) {
-        reqMethod = "PATCH";
-        withId = {
-          id: initialWord!.id,
-        };
+        reqMethod = 'PATCH';
       } else {
-        reqMethod = "POST";
-        withId = {};
+        reqMethod = 'POST';
       }
 
-      const res = await fetch("/api/wordInfo", {
+      const res = await fetch('/api/wordInfo', {
         method: reqMethod,
         body: JSON.stringify({
-          ...withId,
           translations,
-          word: wordInputHook.value,
+          word: update ? initialWord?.word : wordInputHook.value,
           description: descriptionInputHook.value,
           similar: [],
         }),
+        headers: {
+          InitData: Telegram.WebApp.initData,
+        },
       });
 
-      return await res.json();
+      return await res.status;
     },
     enabled: shouldFetch,
   });
@@ -113,8 +110,8 @@ export function EditWord(props: EditWordProps) {
   };
 
   const addNewTranslation = () => {
-    editTranslationInput.setValue("");
-    setEditingTranslation({ value: "", oldValue: "" });
+    editTranslationInput.setValue('');
+    setEditingTranslation({ value: '', oldValue: '' });
   };
 
   return (
@@ -124,7 +121,7 @@ export function EditWord(props: EditWordProps) {
         {!update && <h1>Add new word</h1>}
 
         <h4>Word</h4>
-        <input {...wordInputHook} />
+        <input {...wordInputHook.inputProps} />
 
         <h4>Translations</h4>
         <div className="translations">
@@ -143,16 +140,16 @@ export function EditWord(props: EditWordProps) {
 
         {!!editingTranslation && (
           <div className="flex">
-            <input {...editTranslationInput} />
+            <input {...editTranslationInput.inputProps} />
             <button onClick={saveTranslation}>✔</button>
             <button onClick={cancelEditTranslation}>✖</button>
           </div>
         )}
 
         <h4>Description</h4>
-        <textarea {...descriptionInputHook} rows={10} />
+        <textarea {...descriptionInputHook.inputProps} rows={10} />
       </div>
-      
+
       <div className="footer">
         <button onClick={saveWord}>Save</button>
 

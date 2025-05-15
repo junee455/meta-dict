@@ -1,8 +1,7 @@
-import { EditWord } from "@/shared/components";
+import { EditWord } from '@/shared/components';
 
-import "./page.scss";
+import './page.scss';
 
 export default function AddNewWordPage() {
-
   return <EditWord />;
 }
