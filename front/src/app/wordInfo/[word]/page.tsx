@@ -98,7 +98,7 @@ export default function WordInfo({
             <div key={i}>{t}</div>
           ))}
         </div>
-        <div>{wordData.description}</div>
+        <p>{wordData.description}</p>
         {!!wordData.similar?.length && (
           <>
             <h4>Group:</h4>

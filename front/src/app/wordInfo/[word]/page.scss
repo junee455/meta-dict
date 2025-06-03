@@ -9,11 +9,15 @@
     flex-wrap: wrap;
     gap: 8px;
 
-    & > div {
+    &>div {
       background-color: #333;
       padding: 2px 4px;
       border-radius: 4px;
     }
+  }
+
+  p {
+    white-space: pre-wrap;
   }
 
   .footer {
