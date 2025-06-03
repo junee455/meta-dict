@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useInput } from '@/shared/hooks';
 import { Word } from '@/types';
 import { useQuery } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 
 import './EditWord.scss';
 
@@ -30,7 +31,9 @@ export function EditWord(props: EditWordProps) {
     initialWord?.translations || []
   );
 
-  const saveWordQuery = useQuery({
+  const router = useRouter();
+
+  useQuery({
     queryKey: ['addWord'],
     queryFn: async () => {
       let reqMethod: string;
@@ -41,20 +44,25 @@ export function EditWord(props: EditWordProps) {
         reqMethod = 'POST';
       }
 
+      const wordToSave = update ? initialWord?.word : wordInputHook.value;
+
       const res = await fetch('/api/wordInfo', {
         method: reqMethod,
         body: JSON.stringify({
           translations,
-          word: update ? initialWord?.word : wordInputHook.value,
+          word: wordToSave,
           description: descriptionInputHook.value,
           similar: [],
         }),
         headers: {
           InitData: Telegram.WebApp.initData,
         },
+      }).then((r) => {
+        router.replace(`/wordInfo/${wordToSave}`);
+        return r;
       });
 
-      return await res.status;
+      return res.status;
     },
     enabled: shouldFetch,
   });
@@ -152,13 +160,6 @@ export function EditWord(props: EditWordProps) {
 
       <div className="footer">
         <button onClick={saveWord}>Save</button>
-
-        {!!saveWordQuery.data && (
-          <>
-            <h4>Response:</h4>
-            <div>{String(saveWordQuery.data)}</div>
-          </>
-        )}
       </div>
     </div>
   );
