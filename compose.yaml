@@ -39,7 +39,7 @@ services:
       - ${TG_BOT_CERT}:${TG_BOT_CERT_SERVER}
       - ${TG_BOT_KEY}:${TG_BOT_KEY_SERVER}
     ports:
-      - "3000:443"
+      - "5000:443"
     environment:
       - TG_BOT_CERT=${TG_BOT_CERT}
       - TG_BOT_KEY=${TG_BOT_KEY}
