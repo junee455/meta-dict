@@ -4,8 +4,8 @@ services:
     build:
       context: ./back-go
       target: base
-    ports:
-      - "8080:8080"
+    expose:
+      - "8080"
     volumes:
       - ./back-go:/app
     environment:
@@ -22,8 +22,8 @@ services:
       context: ./front
       dockerfile: Dockerfile
       target: base
-    ports:
-      - "3000:3000"
+    expose:
+      - "3000"
     volumes:
       - ./front:/app
       - /app/node_modules
